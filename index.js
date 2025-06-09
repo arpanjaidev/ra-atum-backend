@@ -21,8 +21,8 @@ app.post('/send-token', async (req, res) => {
   }
 
   try {
-    const amount = web3.utils.toWei('0.0001', 'ether').toString(); // ✅ Convert to string
-    const gasPrice = (await web3.eth.getGasPrice()).toString();   // ✅ Convert to string
+    const amount = web3.utils.toWei('0.0001', 'ether').toString();
+    const gasPrice = (await web3.eth.getGasPrice()).toString();
 
     const tx = {
       from: FROM_ADDRESS,
@@ -35,7 +35,12 @@ app.post('/send-token', async (req, res) => {
     const signedTx = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
     const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
-    res.send({ success: true, receipt });
+    // ✅ Convert all BigInt in receipt to strings so Express can send it
+    const safeReceipt = JSON.parse(JSON.stringify(receipt, (_, v) =>
+      typeof v === 'bigint' ? v.toString() : v
+    ));
+
+    res.send({ success: true, receipt: safeReceipt });
   } catch (err) {
     console.error('Transaction error:', err);
     res.status(500).send({ error: 'Transaction failed', details: err.message });
