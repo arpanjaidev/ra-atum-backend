@@ -21,15 +21,16 @@ app.post('/send-token', async (req, res) => {
   }
 
   try {
-    const amount = web3.utils.toWei('0.0001', 'ether');
+    // ✅ Convert to string to avoid BigInt error
+    const amount = web3.utils.toWei('0.0001', 'ether').toString();
 
-    const gasPrice = await web3.eth.getGasPrice(); // ✅ Get gas price
+    const gasPrice = await web3.eth.getGasPrice(); // ✅ Explicit gas price for BSC
 
     const tx = {
       from: FROM_ADDRESS,
       to: CONTRACT_ADDRESS,
       gas: 100000,
-      gasPrice, // ✅ Add gas price explicitly for BSC
+      gasPrice,
       data: contract.methods.transfer(toAddress, amount).encodeABI(),
     };
 
