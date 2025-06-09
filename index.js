@@ -14,13 +14,15 @@ const ABI = require('./abi.json');
 const contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
 
 app.post('/send-token', async (req, res) => {
-  // ✅ Log full payload from Wix
-  console.log("Incoming request body from Wix:", req.body);
+  console.log("📦 Incoming request body from Wix:", req.body);
 
-  // ✅ Correct field key extraction from Wix form
-  const toAddress = req.body?.data?.['field:wallet_address'];
+  const data = req.body?.data;
+  const toAddress = data?.['field:wallet_address'];
+
+  console.log("💡 Extracted toAddress:", toAddress);
 
   if (!web3.utils.isAddress(toAddress)) {
+    console.log("❌ Invalid wallet address received:", toAddress);
     return res.status(400).send({ error: 'Invalid wallet address', value: toAddress });
   }
 
@@ -39,14 +41,14 @@ app.post('/send-token', async (req, res) => {
     const signedTx = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
     const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
-    // ✅ Convert BigInt fields so Express can return JSON
     const safeReceipt = JSON.parse(JSON.stringify(receipt, (_, v) =>
       typeof v === 'bigint' ? v.toString() : v
     ));
 
+    console.log("✅ Transaction success:", safeReceipt);
     res.send({ success: true, receipt: safeReceipt });
   } catch (err) {
-    console.error('Transaction error:', err);
+    console.error("🚨 Transaction error:", err);
     res.status(500).send({ error: 'Transaction failed', details: err.message });
   }
 });
