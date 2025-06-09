@@ -21,10 +21,8 @@ app.post('/send-token', async (req, res) => {
   }
 
   try {
-    // ✅ Convert to string to avoid BigInt error
     const amount = web3.utils.toWei('0.0001', 'ether').toString();
-
-    const gasPrice = await web3.eth.getGasPrice(); // ✅ Explicit gas price for BSC
+    const gasPrice = await web3.eth.getGasPrice();
 
     const tx = {
       from: FROM_ADDRESS,
