@@ -1,6 +1,6 @@
 const express = require('express');
 require('dotenv').config();
-const { Web3 } = require('web3'); // ✅ Web3 v4 import
+const { Web3 } = require('web3');
 
 const app = express();
 app.use(express.json());
@@ -23,10 +23,13 @@ app.post('/send-token', async (req, res) => {
   try {
     const amount = web3.utils.toWei('0.0001', 'ether');
 
+    const gasPrice = await web3.eth.getGasPrice(); // ✅ Get gas price
+
     const tx = {
       from: FROM_ADDRESS,
       to: CONTRACT_ADDRESS,
       gas: 100000,
+      gasPrice, // ✅ Add gas price explicitly for BSC
       data: contract.methods.transfer(toAddress, amount).encodeABI(),
     };
 
