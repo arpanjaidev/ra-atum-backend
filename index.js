@@ -21,8 +21,8 @@ app.post('/send-token', async (req, res) => {
   }
 
   try {
-    const amount = web3.utils.toWei('0.0001', 'ether').toString();
-    const gasPrice = await web3.eth.getGasPrice();
+    const amount = web3.utils.toWei('0.0001', 'ether').toString(); // ✅ Convert to string
+    const gasPrice = (await web3.eth.getGasPrice()).toString();   // ✅ Convert to string
 
     const tx = {
       from: FROM_ADDRESS,
@@ -44,4 +44,3 @@ app.post('/send-token', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ RA Atum backend running on port ${PORT}`));
-
